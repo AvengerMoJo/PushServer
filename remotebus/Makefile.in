@@ -35,8 +35,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-TESTS = rbus-test$(EXEEXT) rbus-create-method-test$(EXEEXT) \
-	rbus-call-name-test$(EXEEXT)
+TESTS =
 noinst_PROGRAMS = $(am__EXEEXT_1)
 subdir = remotebus
 DIST_COMMON = $(remotebus_internal_HEADERS) $(srcdir)/Makefile.am \
@@ -66,21 +65,11 @@ librbus_internal_la_OBJECTS = $(am_librbus_internal_la_OBJECTS)
 librbus_la_LIBADD =
 am_librbus_la_OBJECTS = $(am__objects_1)
 librbus_la_OBJECTS = $(am_librbus_la_OBJECTS)
-am__EXEEXT_1 = rbus-test$(EXEEXT) rbus-create-method-test$(EXEEXT) \
-	rbus-call-name-test$(EXEEXT)
+librbus_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(librbus_la_LDFLAGS) $(LDFLAGS) -o $@
+am__EXEEXT_1 =
 PROGRAMS = $(noinst_PROGRAMS)
-am_rbus_call_name_test_OBJECTS = rbus-call-name-test.$(OBJEXT)
-rbus_call_name_test_OBJECTS = $(am_rbus_call_name_test_OBJECTS)
-rbus_call_name_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am_rbus_create_method_test_OBJECTS =  \
-	rbus-create-method-test.$(OBJEXT)
-rbus_create_method_test_OBJECTS =  \
-	$(am_rbus_create_method_test_OBJECTS)
-rbus_create_method_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am_rbus_test_OBJECTS = rbus-test.$(OBJEXT)
-rbus_test_OBJECTS = $(am_rbus_test_OBJECTS)
-rbus_test_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	librbus-internal.la
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -93,12 +82,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(librbus_internal_la_SOURCES) $(librbus_la_SOURCES) \
-	$(rbus_call_name_test_SOURCES) \
-	$(rbus_create_method_test_SOURCES) $(rbus_test_SOURCES)
-DIST_SOURCES = $(librbus_internal_la_SOURCES) $(librbus_la_SOURCES) \
-	$(rbus_call_name_test_SOURCES) \
-	$(rbus_create_method_test_SOURCES) $(rbus_test_SOURCES)
+SOURCES = $(librbus_internal_la_SOURCES) $(librbus_la_SOURCES)
+DIST_SOURCES = $(librbus_internal_la_SOURCES) $(librbus_la_SOURCES)
 remotebus_internalHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(remotebus_internal_HEADERS)
 ETAGS = etags
@@ -168,12 +153,14 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PIC_LDFLAGS = @PIC_LDFLAGS@
 PKG_CONFIG = @PKG_CONFIG@
 RANLIB = @RANLIB@
 RBUS_MAJOR_VERSION = @RBUS_MAJOR_VERSION@
 RBUS_MICRO_VERSION = @RBUS_MICRO_VERSION@
 RBUS_MINOR_VERSION = @RBUS_MINOR_VERSION@
 RBUS_VERSION = @RBUS_VERSION@
+R_DYNAMIC_LDFLAG = @R_DYNAMIC_LDFLAG@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -237,7 +224,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 dbus_includedir = /usr/include/dbus-1.0/
-INCLUDES = -I$(top_builddir) -I$(top_srcdir) $(DBUS_CFLAGS) $(LIBXML_CFLAGS)
+INCLUDES = -g -I$(top_builddir) -I$(top_srcdir) $(DBUS_CFLAGS) $(LIBXML_CFLAGS)
 remotebus_internaldir = $(libdir)/remotebus/include/remotebus
 remotebus_internal_HEADERS = \
 	include/remotebus-internal.h	\
@@ -248,7 +235,7 @@ noinst_LTLIBRARIES = librbus-internal.la
 RBUS_INTERNAL_SOURCES = \
 	rbus-internal.c				\
 	rbus-dbus-object-parser.c		\
-	rbus-dbus-object-parser.h
+	include/rbus-dbus-object-parser.h
 
 librbus_la_SOURCES = \
         $(RBUS_INTERNAL_SOURCES)
@@ -261,18 +248,9 @@ librbus_internal_la_LIBADD = \
 
 BUILT_SOURCES = $(remotebus_internal_HEADERS)
 EXTRA_DIST = include/remotebus-type.h.in
-rbus_test_SOURCES = \
-        rbus-test.c
 
-rbus_test_LDADD = $(DBUS_LIBS) $(LIBXML_LIBS) librbus-internal.la
-rbus_create_method_test_SOURCES = \
-	rbus-create-method-test.c
-
-rbus_create_method_test_LDADD = $(DBUS_LIBS)
-rbus_call_name_test_SOURCES = \
-	rbus-call-name-test.c
-
-rbus_call_name_test_LDADD = $(DBUS_LIBS)
+# librbus_la_LIBADD= 
+librbus_la_LDFLAGS = -export-symbols-regex "^[^_].*" -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) -no-undefined @R_DYNAMIC_LDFLAG@ @PIC_LDFLAGS@
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -346,7 +324,7 @@ clean-noinstLTLIBRARIES:
 librbus-internal.la: $(librbus_internal_la_OBJECTS) $(librbus_internal_la_DEPENDENCIES) 
 	$(LINK)  $(librbus_internal_la_OBJECTS) $(librbus_internal_la_LIBADD) $(LIBS)
 librbus.la: $(librbus_la_OBJECTS) $(librbus_la_DEPENDENCIES) 
-	$(LINK) -rpath $(libdir) $(librbus_la_OBJECTS) $(librbus_la_LIBADD) $(LIBS)
+	$(librbus_la_LINK) -rpath $(libdir) $(librbus_la_OBJECTS) $(librbus_la_LIBADD) $(LIBS)
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
@@ -354,15 +332,6 @@ clean-noinstPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-rbus-call-name-test$(EXEEXT): $(rbus_call_name_test_OBJECTS) $(rbus_call_name_test_DEPENDENCIES) 
-	@rm -f rbus-call-name-test$(EXEEXT)
-	$(LINK) $(rbus_call_name_test_OBJECTS) $(rbus_call_name_test_LDADD) $(LIBS)
-rbus-create-method-test$(EXEEXT): $(rbus_create_method_test_OBJECTS) $(rbus_create_method_test_DEPENDENCIES) 
-	@rm -f rbus-create-method-test$(EXEEXT)
-	$(LINK) $(rbus_create_method_test_OBJECTS) $(rbus_create_method_test_LDADD) $(LIBS)
-rbus-test$(EXEEXT): $(rbus_test_OBJECTS) $(rbus_test_DEPENDENCIES) 
-	@rm -f rbus-test$(EXEEXT)
-	$(LINK) $(rbus_test_OBJECTS) $(rbus_test_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -370,11 +339,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbus-call-name-test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbus-create-method-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbus-dbus-object-parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbus-internal.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbus-test.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <dbus/dbus.h>
 #include <include/remotebus-internal.h>
-#include <rbus-dbus-object-parser.h>
+#include <include/rbus-dbus-object-parser.h>
 
 
 DBusConnection* get_session_connected(){
@@ -298,11 +298,17 @@ int main() {
     //sending_signal( session_bus );
     //request_name_for_connection( session_bus );
     //calling_method( session_bus );
+    int i=1000;
+    while( i-- ){
+    //while( 1 ){
     rbus_dbus_object_type_pointer result = parser_object_name( "org.gnome.Tomboy" );
 
     if( result != NULL ){
 	fprintf(stdout, "org.gnome.Tomboy service get_object %s\n", result->name );
 	loop_node( result->root, 0 );
+    }
+    free_dbus_object( result );
+    //sleep(1);
     }
     return 0;
 }
