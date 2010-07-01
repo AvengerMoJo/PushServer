@@ -1,5 +1,2 @@
 Push Server is intend to create a messaging server which allow server to push to client directly and client will nolonger need to pull message in a busy loop to fit the current need of low bandwidth and low power client e.g. hand handle device. 
 
-Update Readme to let public user to git clone this project.
-
-git clone git://github.com/AvengerMoJo/PushServer.git 

@@ -1,6 +1,8 @@
 #ifndef _RBUS_DBUS_OBJECT_PARSER_H_
 #define _RBUS_DBUS_OBJECT_PARSER_H_
 
+#include <include/remotebus-type.h>
+
 RBUS_EXTERN_START
 
 typedef struct _rbus_arg_type { 

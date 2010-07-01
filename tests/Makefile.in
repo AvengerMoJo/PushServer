@@ -14,8 +14,6 @@
 
 @SET_MAKE@
 
-
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -35,11 +33,13 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-TESTS =
+TESTS = rbus-test$(EXEEXT) rbus-create-method-test$(EXEEXT) \
+	rbus-call-name-test$(EXEEXT) \
+	rbus-all-method-type-test$(EXEEXT) \
+	rbus-call-all-method-type-test$(EXEEXT)
 noinst_PROGRAMS = $(am__EXEEXT_1)
-subdir = remotebus
-DIST_COMMON = $(remotebus_internal_HEADERS) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in
+subdir = tests
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -47,30 +47,42 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(libdir)" \
-	"$(DESTDIR)$(remotebus_internaldir)"
-libLTLIBRARIES_INSTALL = $(INSTALL)
-LTLIBRARIES = $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
-am__DEPENDENCIES_1 =
-librbus_internal_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am__objects_1 = rbus-dbus-object-parser.lo rbus-internal.lo \
-	rbus-proxy-call.lo
-am_librbus_internal_la_OBJECTS = $(am__objects_1)
-librbus_internal_la_OBJECTS = $(am_librbus_internal_la_OBJECTS)
-librbus_la_LIBADD =
-am_librbus_la_OBJECTS = $(am__objects_1)
-librbus_la_OBJECTS = $(am_librbus_la_OBJECTS)
-librbus_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(librbus_la_LDFLAGS) $(LDFLAGS) -o $@
-am__EXEEXT_1 =
+am__EXEEXT_1 = rbus-test$(EXEEXT) rbus-create-method-test$(EXEEXT) \
+	rbus-call-name-test$(EXEEXT) \
+	rbus-all-method-type-test$(EXEEXT) \
+	rbus-call-all-method-type-test$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
+am_rbus_all_method_type_test_OBJECTS =  \
+	rbus-all-method-type-test.$(OBJEXT)
+rbus_all_method_type_test_OBJECTS =  \
+	$(am_rbus_all_method_type_test_OBJECTS)
+am__DEPENDENCIES_1 =
+rbus_all_method_type_test_DEPENDENCIES =  \
+	$(top_builddir)/remotebus/librbus.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+am_rbus_call_all_method_type_test_OBJECTS =  \
+	rbus-call-all-method-type-test.$(OBJEXT)
+rbus_call_all_method_type_test_OBJECTS =  \
+	$(am_rbus_call_all_method_type_test_OBJECTS)
+rbus_call_all_method_type_test_DEPENDENCIES =  \
+	$(top_builddir)/remotebus/librbus.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+am_rbus_call_name_test_OBJECTS = rbus-call-name-test.$(OBJEXT)
+rbus_call_name_test_OBJECTS = $(am_rbus_call_name_test_OBJECTS)
+rbus_call_name_test_DEPENDENCIES =  \
+	$(top_builddir)/remotebus/librbus.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+am_rbus_create_method_test_OBJECTS =  \
+	rbus-create-method-test.$(OBJEXT)
+rbus_create_method_test_OBJECTS =  \
+	$(am_rbus_create_method_test_OBJECTS)
+rbus_create_method_test_DEPENDENCIES =  \
+	$(top_builddir)/remotebus/librbus.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+am_rbus_test_OBJECTS = rbus-test.$(OBJEXT)
+rbus_test_OBJECTS = $(am_rbus_test_OBJECTS)
+rbus_test_DEPENDENCIES = $(top_builddir)/remotebus/librbus.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -83,10 +95,14 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(librbus_internal_la_SOURCES) $(librbus_la_SOURCES)
-DIST_SOURCES = $(librbus_internal_la_SOURCES) $(librbus_la_SOURCES)
-remotebus_internalHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(remotebus_internal_HEADERS)
+SOURCES = $(rbus_all_method_type_test_SOURCES) \
+	$(rbus_call_all_method_type_test_SOURCES) \
+	$(rbus_call_name_test_SOURCES) \
+	$(rbus_create_method_test_SOURCES) $(rbus_test_SOURCES)
+DIST_SOURCES = $(rbus_all_method_type_test_SOURCES) \
+	$(rbus_call_all_method_type_test_SOURCES) \
+	$(rbus_call_name_test_SOURCES) \
+	$(rbus_create_method_test_SOURCES) $(rbus_test_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -231,36 +247,29 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 dbus_includedir = /usr/include/dbus-1.0/
-INCLUDES = -g -I$(top_builddir) -I$(top_srcdir) $(DBUS_CFLAGS) $(LIBXML_CFLAGS)
-remotebus_internaldir = $(libdir)/remotebus/include/remotebus
-remotebus_internal_HEADERS = \
-	include/remotebus-internal.h	\
-	include/remotebus-type.h
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/remotebus $(DBUS_CFLAGS) $(LIBXML_CFLAGS)
+EXTRA_DIST = 
+rbus_test_SOURCES = \
+        rbus-test.c
 
-lib_LTLIBRARIES = librbus.la
-noinst_LTLIBRARIES = librbus-internal.la
-RBUS_INTERNAL_SOURCES = \
-	rbus-dbus-object-parser.c		\
-	rbus-internal.c				\
-	rbus-proxy-call.c			\
-	include/rbus-dbus-object-parser.h
+rbus_test_LDADD = $(top_builddir)/remotebus/librbus.la $(DBUS_LIBS) $(LIBXML_LIBS) 
+rbus_create_method_test_SOURCES = \
+	rbus-create-method-test.c
 
-librbus_la_SOURCES = \
-        $(RBUS_INTERNAL_SOURCES)
+rbus_create_method_test_LDADD = $(top_builddir)/remotebus/librbus.la $(DBUS_LIBS) $(LIBXML_LIBS)
+rbus_call_name_test_SOURCES = \
+	rbus-call-name-test.c
 
-librbus_internal_la_SOURCES = \
-        $(RBUS_INTERNAL_SOURCES)
+rbus_call_name_test_LDADD = $(top_builddir)/remotebus/librbus.la $(DBUS_LIBS) $(LIBXML_LIBS)
+rbus_all_method_type_test_SOURCES = \
+	rbus-all-method-type-test.c
 
-librbus_internal_la_LIBADD = \
-	$(LIBXML_LIBS)
+rbus_all_method_type_test_LDADD = $(top_builddir)/remotebus/librbus.la $(DBUS_LIBS) $(LIBXML_LIBS)
+rbus_call_all_method_type_test_SOURCES = \
+	rbus-call-all-method-type-test.c
 
-BUILT_SOURCES = $(remotebus_internal_HEADERS)
-EXTRA_DIST = include/remotebus-type.h.in
-
-# librbus_la_LIBADD= 
-librbus_la_LDFLAGS = -export-symbols-regex "^[^_].*" -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) -no-undefined @R_DYNAMIC_LDFLAG@ @PIC_LDFLAGS@
-all: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+rbus_call_all_method_type_test_LDADD = $(top_builddir)/remotebus/librbus.la $(DBUS_LIBS) $(LIBXML_LIBS)
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
@@ -273,9 +282,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  remotebus/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  tests/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  remotebus/Makefile
+	  $(AUTOMAKE) --gnu  tests/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -293,46 +302,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-libLTLIBRARIES: $(lib_LTLIBRARIES)
-	@$(NORMAL_INSTALL)
-	test -z "$(libdir)" || $(MKDIR_P) "$(DESTDIR)$(libdir)"
-	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    f=$(am__strip_dir) \
-	    echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(libLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) '$$p' '$(DESTDIR)$(libdir)/$$f'"; \
-	    $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(libLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) "$$p" "$(DESTDIR)$(libdir)/$$f"; \
-	  else :; fi; \
-	done
-
-uninstall-libLTLIBRARIES:
-	@$(NORMAL_UNINSTALL)
-	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
-	  p=$(am__strip_dir) \
-	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(libdir)/$$p'"; \
-	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(libdir)/$$p"; \
-	done
-
-clean-libLTLIBRARIES:
-	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
-	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
-	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
-	  test "$$dir" != "$$p" || dir=.; \
-	  echo "rm -f \"$${dir}/so_locations\""; \
-	  rm -f "$${dir}/so_locations"; \
-	done
-
-clean-noinstLTLIBRARIES:
-	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
-	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
-	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
-	  test "$$dir" != "$$p" || dir=.; \
-	  echo "rm -f \"$${dir}/so_locations\""; \
-	  rm -f "$${dir}/so_locations"; \
-	done
-librbus-internal.la: $(librbus_internal_la_OBJECTS) $(librbus_internal_la_DEPENDENCIES) 
-	$(LINK)  $(librbus_internal_la_OBJECTS) $(librbus_internal_la_LIBADD) $(LIBS)
-librbus.la: $(librbus_la_OBJECTS) $(librbus_la_DEPENDENCIES) 
-	$(librbus_la_LINK) -rpath $(libdir) $(librbus_la_OBJECTS) $(librbus_la_LIBADD) $(LIBS)
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
@@ -340,6 +309,21 @@ clean-noinstPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
+rbus-all-method-type-test$(EXEEXT): $(rbus_all_method_type_test_OBJECTS) $(rbus_all_method_type_test_DEPENDENCIES) 
+	@rm -f rbus-all-method-type-test$(EXEEXT)
+	$(LINK) $(rbus_all_method_type_test_OBJECTS) $(rbus_all_method_type_test_LDADD) $(LIBS)
+rbus-call-all-method-type-test$(EXEEXT): $(rbus_call_all_method_type_test_OBJECTS) $(rbus_call_all_method_type_test_DEPENDENCIES) 
+	@rm -f rbus-call-all-method-type-test$(EXEEXT)
+	$(LINK) $(rbus_call_all_method_type_test_OBJECTS) $(rbus_call_all_method_type_test_LDADD) $(LIBS)
+rbus-call-name-test$(EXEEXT): $(rbus_call_name_test_OBJECTS) $(rbus_call_name_test_DEPENDENCIES) 
+	@rm -f rbus-call-name-test$(EXEEXT)
+	$(LINK) $(rbus_call_name_test_OBJECTS) $(rbus_call_name_test_LDADD) $(LIBS)
+rbus-create-method-test$(EXEEXT): $(rbus_create_method_test_OBJECTS) $(rbus_create_method_test_DEPENDENCIES) 
+	@rm -f rbus-create-method-test$(EXEEXT)
+	$(LINK) $(rbus_create_method_test_OBJECTS) $(rbus_create_method_test_LDADD) $(LIBS)
+rbus-test$(EXEEXT): $(rbus_test_OBJECTS) $(rbus_test_DEPENDENCIES) 
+	@rm -f rbus-test$(EXEEXT)
+	$(LINK) $(rbus_test_OBJECTS) $(rbus_test_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -347,9 +331,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbus-dbus-object-parser.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbus-internal.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbus-proxy-call.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbus-all-method-type-test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbus-call-all-method-type-test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbus-call-name-test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbus-create-method-test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbus-test.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -377,23 +363,6 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-remotebus_internalHEADERS: $(remotebus_internal_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(remotebus_internaldir)" || $(MKDIR_P) "$(DESTDIR)$(remotebus_internaldir)"
-	@list='$(remotebus_internal_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(remotebus_internalHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(remotebus_internaldir)/$$f'"; \
-	  $(remotebus_internalHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(remotebus_internaldir)/$$f"; \
-	done
-
-uninstall-remotebus_internalHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(remotebus_internal_HEADERS)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(remotebus_internaldir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(remotebus_internaldir)/$$f"; \
-	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -543,15 +512,10 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
-check: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) check-am
-all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(HEADERS)
+check: check-am
+all-am: Makefile $(PROGRAMS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(remotebus_internaldir)"; do \
-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
-	done
-install: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) install-am
+install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -575,11 +539,10 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
-clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
-	clean-noinstLTLIBRARIES clean-noinstPROGRAMS mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -597,11 +560,11 @@ info: info-am
 
 info-am:
 
-install-data-am: install-remotebus_internalHEADERS
+install-data-am:
 
 install-dvi: install-dvi-am
 
-install-exec-am: install-libLTLIBRARIES
+install-exec-am:
 
 install-html: install-html-am
 
@@ -633,26 +596,23 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-libLTLIBRARIES \
-	uninstall-remotebus_internalHEADERS
+uninstall-am:
 
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-TESTS check-am clean \
-	clean-generic clean-libLTLIBRARIES clean-libtool \
-	clean-noinstLTLIBRARIES clean-noinstPROGRAMS ctags distclean \
-	distclean-compile distclean-generic distclean-libtool \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-remotebus_internalHEADERS \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-libLTLIBRARIES uninstall-remotebus_internalHEADERS
+	clean-generic clean-libtool clean-noinstPROGRAMS ctags \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

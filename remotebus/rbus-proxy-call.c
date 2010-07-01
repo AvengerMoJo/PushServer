@@ -1,6 +1,7 @@
 #include <include/rbus-proxy-call.h>
 
-DBusConnection *proxy_session( char* object_name ){ 
+DBusConnection *proxy_session( char* object_name )
+{
         DBusConnection* session=NULL;
         DBusError error;
         dbus_uint32_t result;
@@ -37,7 +38,8 @@ DBusConnection *proxy_session( char* object_name ){
 	}
 }
 
-void create_input_dict( DBusMessageIter *iter, const char *key, char *type_str, void *data) {
+void create_input_dict( DBusMessageIter *iter, const char *key, char *type_str, void *data)
+{
   DBusMessageIter entry, variant;
 
   dbus_message_iter_open_container(iter, DBUS_TYPE_DICT_ENTRY, "sv", &entry);
@@ -50,11 +52,13 @@ void create_input_dict( DBusMessageIter *iter, const char *key, char *type_str, 
 }
 
 
-dbus_bool_t create_input_message( DBusMessage *message, rbus_method_type_pointer method, int type, va_list args ){ 
+dbus_bool_t create_input_message( DBusMessage *message, rbus_method_type_pointer method, int type, va_list args )
+{
 	return dbus_message_append_args_valist( message, type, args ); 
 }
 
-dbus_bool_t create_input_message_2( DBusMessage *message, rbus_method_type_pointer method, va_list args ){ 
+dbus_bool_t create_input_message_2( DBusMessage *message, rbus_method_type_pointer method, va_list args )
+{
 	DBusMessageIter in_args;
 	int i, type, next;
 	if( message == NULL || method == NULL )
@@ -123,7 +127,8 @@ dbus_bool_t create_input_message_2( DBusMessage *message, rbus_method_type_point
 	} // loop method - input end 
 } 
 
-dbus_bool_t create_output_message( DBusMessage *message, rbus_method_type_pointer method) {
+dbus_bool_t create_output_message( DBusMessage *message, rbus_method_type_pointer method)
+{
 	va_list my_list;
 	int list_count=0; 
 	int i;
@@ -166,22 +171,52 @@ dbus_message_get_args_valist (DBusMessage     *message,
                               int              first_arg_type, va_list );
 */
 }
-void *create_output_result( DBusMessageIter *message, void *result, char* type ){
+void *create_output_result( DBusMessageIter *message, void *result, char* type )
+{
 	DBusMessageIter subiter;
+	DBusMessageIter subsub;
 	int current_type = dbus_message_iter_get_arg_type (message);
+	_rbus_verbose("Current type ->%c<-, recorded type ->%c<-\n", current_type, type[0] );
 	if( current_type == DBUS_TYPE_INVALID)
 		return NULL;
 
 	switch( type[0] ) {
 		case 'v':
+			{
+			dbus_message_iter_recurse (message, &subiter);
+			int type = dbus_message_iter_get_arg_type (message);
+			//char* type = dbus_message_iter_get_signature( &subiter ); 
+			_rbus_verbose("variant type ->%d<-\n", type );
+			//if( dbus_signature_validate( type, NULL ) ){
+				//_rbus_verbose("validate variant type ->%d<-\n", type );
+				return create_output_result( &subiter, result, type );
+			//}
+			//}
+			}
 		case 'r':
 		case 'e':
 		case '{':
+			{ 
+				void *key, *value; 
+				void **sub_result = calloc( sizeof(void*), 2 );
+				dbus_message_iter_recurse (message, &subiter);
+				key = create_output_result(&subiter, result, &type[1] );
+				dbus_message_iter_next (&subiter);
+				value = create_output_result(&subiter, result, &type[2] );
+				sub_result[0] = key; 
+				sub_result[1] = value; 
+				return sub_result; 
+			}
 		case 'a':
 			dbus_message_iter_recurse (message, &subiter);
+			_rbus_verbose("subiter type ->%c<-\n", dbus_message_iter_get_arg_type(&subiter) );
+			if(dbus_message_iter_get_element_type (message) == 'e' ) { 
+				_rbus_verbose("Element type->%c<-\n", dbus_message_iter_get_element_type (message)  );
+				return create_output_result(&subiter, result , &type[1] );
+			}
 			while ((current_type = dbus_message_iter_get_arg_type (&subiter)) != DBUS_TYPE_INVALID) {
-				void *sub_result;
-				_rbus_verbose("Array current type ->%c<-, recorded type ->%s<-\n", current_type, type[1] );
+				void* sub_result;
+				_rbus_verbose("Array current type ->%c<-, recorded type ->%c<-\n", current_type, type[1] );
 				create_output_result(&subiter, &sub_result, &type[1] );
 				dbus_message_iter_next (&subiter);
 			}
@@ -195,7 +230,8 @@ void *create_output_result( DBusMessageIter *message, void *result, char* type )
 	}
 }
 
-void** method_object_call_blocked( rbus_dbus_object_type_pointer dbus_object, rbus_method_type_pointer method, int first_arg, ... ){
+void** method_object_call_blocked( rbus_dbus_object_type_pointer dbus_object, rbus_method_type_pointer method, int first_arg, ... )
+{
         DBusConnection *session=NULL;
         DBusError error;
 	va_list args;
@@ -210,12 +246,17 @@ void** method_object_call_blocked( rbus_dbus_object_type_pointer dbus_object, rb
 			_rbus_verbose( "Remote method message intraface created, does it need arg? %d\n", method->input_count );
 			if( method->input_count > 0 ) {
 				DBusMessageIter in_args;
+				void *value;
 				va_start (args, first_arg );
+				dbus_message_append_args_valist( message, first_arg, args);
+				_rbus_verbose( "dbus args_list appended \n" );
+/*
 				dbus_message_iter_init_append(message, &in_args);
 				if (!create_input_message( message, method, first_arg, args )) {
 					va_end (args);
 					return;
 				}
+*/
 				va_end (args);
 			}
 			reply = dbus_connection_send_with_reply_and_block (session, message, 1000, &error);

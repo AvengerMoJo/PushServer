@@ -5,7 +5,8 @@
 #include <include/remotebus-internal.h>
 #include <include/rbus-dbus-object-parser.h>
 
-void inline add_node( rbus_node_type_pointer parent, rbus_node_type_pointer child ) {
+void inline add_node( rbus_node_type_pointer parent, rbus_node_type_pointer child )
+{
 	int i;
         rbus_node_type_pointer *tmp;
 	if( child != NULL ) { 
@@ -23,7 +24,8 @@ void inline add_node( rbus_node_type_pointer parent, rbus_node_type_pointer chil
 	}
 }
 
-void inline add_interface( rbus_node_type_pointer parent, rbus_interface_type_pointer child ) {
+void inline add_interface( rbus_node_type_pointer parent, rbus_interface_type_pointer child )
+{
 	int i;
         rbus_interface_type_pointer *tmp;
 	if( child != NULL ) { 
@@ -41,7 +43,8 @@ void inline add_interface( rbus_node_type_pointer parent, rbus_interface_type_po
 	}
 }
 
-void inline add_method( rbus_interface_type_pointer interface, rbus_method_type_pointer method ) {
+void inline add_method( rbus_interface_type_pointer interface, rbus_method_type_pointer method )
+{
 	int i;
         rbus_method_type_pointer *tmp;
 	if( method != NULL ) { 
@@ -59,7 +62,8 @@ void inline add_method( rbus_interface_type_pointer interface, rbus_method_type_
 	}
 }
 
-void inline add_signal( rbus_interface_type_pointer interface, rbus_signal_type_pointer signal ) {
+void inline add_signal( rbus_interface_type_pointer interface, rbus_signal_type_pointer signal )
+{
         int i;
         rbus_signal_type_pointer *tmp;
 	if( signal != NULL ) { 
@@ -112,7 +116,8 @@ void inline add_signal( rbus_interface_type_pointer interface, rbus_signal_type_
 	}										\
 }
 
-void inline parse_method( rbus_method_type_pointer method, xmlNodePtr method_node ) {
+void inline parse_method( rbus_method_type_pointer method, xmlNodePtr method_node )
+{
 	char* io; 
 	rbus_arg_type_pointer  new_arg; 
 	xmlNodePtr child = method_node->xmlChildrenNode;
@@ -135,7 +140,8 @@ void inline parse_method( rbus_method_type_pointer method, xmlNodePtr method_nod
 	}
 }
 
-void inline parse_signal( rbus_signal_type_pointer signal, xmlNodePtr signal_node ) {
+void inline parse_signal( rbus_signal_type_pointer signal, xmlNodePtr signal_node )
+{
 	char* io; 
 	rbus_arg_type_pointer  new_arg; 
 	xmlNodePtr child = signal_node->xmlChildrenNode;
@@ -158,7 +164,8 @@ void inline parse_signal( rbus_signal_type_pointer signal, xmlNodePtr signal_nod
 	}
 }
 
-void inline parse_interface( rbus_interface_type_pointer new_interface, xmlNodePtr interface_node ) {
+void inline parse_interface( rbus_interface_type_pointer new_interface, xmlNodePtr interface_node )
+{
 	rbus_method_type_pointer  new_method; 
 	rbus_signal_type_pointer  new_signal; 
 	xmlNodePtr child = interface_node->xmlChildrenNode;
@@ -182,7 +189,8 @@ void inline parse_interface( rbus_interface_type_pointer new_interface, xmlNodeP
 	}
 }
 
-char* get_object_xml( DBusConnection *session, char *object_name, char *path ) {
+char* get_object_xml( DBusConnection *session, char *object_name, char *path )
+{
 	DBusMessage	*result_msg;
 	DBusError	error;
 	DBusMessage	*introspect_call;
@@ -228,7 +236,8 @@ char* get_object_xml( DBusConnection *session, char *object_name, char *path ) {
 	}
 }
 
-rbus_node_type_pointer create_object( DBusConnection *session, char *object_name, char* path) { 
+rbus_node_type_pointer create_object( DBusConnection *session, char *object_name, char* path)
+{
 	char* xml;
 	char* node_name;
 	char* new_node_name;
@@ -289,7 +298,8 @@ rbus_node_type_pointer create_object( DBusConnection *session, char *object_name
 	return node;
 }
 
-rbus_dbus_object_type_pointer parser_object_name( char* object_name ) { 
+rbus_dbus_object_type_pointer parser_object_name( char* object_name )
+{
 	DBusConnection* session;
 	DBusError error;
 	dbus_uint32_t result;
@@ -340,7 +350,8 @@ rbus_dbus_object_type_pointer parser_object_name( char* object_name ) {
 } 
 
 
-void free_signal( rbus_signal_type_pointer signal ) {
+void free_signal( rbus_signal_type_pointer signal )
+{
         int i=0;
         rbus_arg_type_pointer child;
         if( signal != NULL ) {
@@ -359,7 +370,8 @@ void free_signal( rbus_signal_type_pointer signal ) {
 }
 
 
-void free_method( rbus_method_type_pointer method ){
+void free_method( rbus_method_type_pointer method )
+{
         int i=0;
         rbus_arg_type_pointer child;
         if( method != NULL ) {
@@ -388,7 +400,8 @@ void free_method( rbus_method_type_pointer method ){
 }
 
 
-void free_interface( rbus_interface_type_pointer interface ) { 
+void free_interface( rbus_interface_type_pointer interface )
+{
 	int i=0;
         rbus_method_type_pointer child;
         rbus_signal_type_pointer s_child;
@@ -412,7 +425,8 @@ void free_interface( rbus_interface_type_pointer interface ) {
 		free( interface->name );
 	}
 }
-void free_node( rbus_node_type_pointer node) { 
+void free_node( rbus_node_type_pointer node)
+{
 	int i=0;
         rbus_node_type_pointer child;
         rbus_interface_type_pointer i_child;
@@ -437,7 +451,8 @@ void free_node( rbus_node_type_pointer node) {
 	}
 }
 
-void free_dbus_object( rbus_dbus_object_type_pointer object) { 
+void free_dbus_object( rbus_dbus_object_type_pointer object)
+{
 	if( object != NULL ){
 		free_node( object->root );
 		free( object->name );

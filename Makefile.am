@@ -1,2 +1,2 @@
-SUBDIRS=remotebus tools
-DIST_SUBDIRS=remotebus tools xml
+SUBDIRS=remotebus tests tools
+DIST_SUBDIRS=remotebus tests tools xml

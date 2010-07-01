@@ -13,8 +13,9 @@ lib_LTLIBRARIES=librbus.la
 noinst_LTLIBRARIES=librbus-internal.la
 
 RBUS_INTERNAL_SOURCES=				\
-	rbus-internal.c				\
 	rbus-dbus-object-parser.c		\
+	rbus-internal.c				\
+	rbus-proxy-call.c			\
 	include/rbus-dbus-object-parser.h
 
 

@@ -2,7 +2,7 @@ AC_PREREQ(2.52)
 
 m4_define([rbus_major_version], [0])
 m4_define([rbus_minor_version], [0])
-m4_define([rbus_micro_version], [1])
+m4_define([rbus_micro_version], [2])
 m4_define([rbus_version],
           [rbus_major_version.rbus_minor_version.rbus_micro_version])
 AC_INIT(rbus, [rbus_version])
@@ -61,6 +61,110 @@ AC_HEADER_STDC
 AC_C_INLINE
 AM_PROG_LIBTOOL
 
+#### Integer sizes 
+
+AC_CHECK_SIZEOF(char)
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(void *)
+AC_CHECK_SIZEOF(long long)
+AC_CHECK_SIZEOF(__int64)
+
+### See what our 64 bit type is called
+AC_MSG_CHECKING([64-bit integer type])
+
+case 8 in
+$ac_cv_sizeof_int)
+  rbusint64=int
+  rbusint64_constant='(val)'
+  rbusuint64_constant='(val)'
+  ;;
+$ac_cv_sizeof_long)
+  rbusint64=long
+  rbusint64_constant='(val##L)'
+  rbusuint64_constant='(val##UL)'
+  ;;
+$ac_cv_sizeof_long_long)
+  rbusint64='long long'
+  rbusint64_constant='(val##LL)'
+  rbusuint64_constant='(val##ULL)'
+  ;;
+$ac_cv_sizeof___int64)
+  rbusint64=__int64
+  rbusint64_constant='(val##i64)'
+  rbusuint64_constant='(val##ui64)'
+  ;;
+esac
+
+if test -z "$rbusint64" ; then
+        RBUS_INT64_TYPE="no_int64_type_detected"
+        RBUS_HAVE_INT64=0
+        RBUS_INT64_CONSTANT=
+        RBUS_UINT64_CONSTANT=
+        AC_MSG_RESULT([none found])
+else
+        RBUS_INT64_TYPE="$rbusint64"
+        RBUS_HAVE_INT64=1
+        RBUS_INT64_CONSTANT="$rbusint64_constant"
+        RBUS_UINT64_CONSTANT="$rbusuint64_constant"
+        AC_MSG_RESULT($RBUS_INT64_TYPE)
+fi
+
+AC_SUBST(RBUS_INT64_TYPE)
+AC_SUBST(RBUS_INT64_CONSTANT)
+AC_SUBST(RBUS_UINT64_CONSTANT)
+AC_SUBST(RBUS_HAVE_INT64)
+
+
+AC_MSG_CHECKING([32-bit integer type])
+
+case 4 in
+$ac_cv_sizeof_short)
+  rbusint32=int
+  ;;
+$ac_cv_sizeof_int)
+  rbusint32=int
+  ;;
+$ac_cv_sizeof_long)
+  rbusint32=long
+  ;;
+esac
+
+if test -z "$rbusint32" ; then
+        RBUS_INT32_TYPE="no_int32_type_detected"
+        AC_MSG_ERROR([No 32-bit integer type found])
+else
+        RBUS_INT32_TYPE="$rbusint32"
+        AC_MSG_RESULT($RBUS_INT32_TYPE)
+fi
+
+AC_SUBST(RBUS_INT32_TYPE)
+
+
+### see what 16-bit int is called
+AC_MSG_CHECKING([16-bit integer type])
+
+case 2 in
+$ac_cv_sizeof_short)
+  rbusint16=short
+  ;;
+$ac_cv_sizeof_int)
+  rbusint16=int
+  ;;
+esac
+
+if test -z "$rbusint16" ; then
+        RBUS_INT16_TYPE="no_int16_type_detected"
+        AC_MSG_ERROR([No 16-bit integer type found])
+else
+        RBUS_INT16_TYPE="$rbusint16"
+        AC_MSG_RESULT($RBUS_INT16_TYPE)
+fi
+
+AC_SUBST(RBUS_INT16_TYPE)
+
+
 PKG_CHECK_MODULES(DBUS, dbus-1, have_dbus=true, have_dbus=false)
 if ! $have_dbus ; then
 	AC_MSG_ERROR([DBus not found.... please include dbus-1-devel above 1.2.0])
@@ -97,6 +201,7 @@ AC_SUBST(PIC_LDFLAGS)
 AC_OUTPUT([
 remotebus/include/remotebus-type.h
 remotebus/Makefile
+tests/Makefile
 tools/Makefile
 xml/Makefile
 Makefile
