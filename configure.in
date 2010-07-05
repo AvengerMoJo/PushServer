@@ -197,6 +197,14 @@ AC_SUBST(R_DYNAMIC_LDFLAG)
 PIC_LDFLAGS="-Wl,-z,relro"
 AC_SUBST(PIC_LDFLAGS)
 
+PKG_CHECK_MODULES(GTK2, gtk+-2.0, have_gtk2=true, have_gtk2=false)
+if ! $have_gtk2 ; then
+        AC_MSG_ERROR([gtk2-devel not found.... please install gtk2-devel above 2.0])
+fi
+AC_SUBST(GTK2_LIBS)
+AC_SUBST(GTK2_CFLAGS)
+
+
 
 AC_OUTPUT([
 remotebus/include/remotebus-type.h

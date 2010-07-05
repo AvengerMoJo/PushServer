@@ -12,15 +12,22 @@ lib_LTLIBRARIES=librbus.la
 
 noinst_LTLIBRARIES=librbus-internal.la
 
+RBUS_LIBRARY_SOURCES=				\
+	rbus-get-service-name.c			\
+	rbus-proxy-call.c			\
+	include/rbus-dbus-object-parser.h	\
+	include/rbus-get-service-name.h		\
+	include/rbus-proxy-call.h
+
 RBUS_INTERNAL_SOURCES=				\
 	rbus-dbus-object-parser.c		\
 	rbus-internal.c				\
-	rbus-proxy-call.c			\
 	include/rbus-dbus-object-parser.h
 
 
 
 librbus_la_SOURCES=				\
+        $(RBUS_LIBRARY_SOURCES)			\
         $(RBUS_INTERNAL_SOURCES)
 
 librbus_internal_la_SOURCES=			\
