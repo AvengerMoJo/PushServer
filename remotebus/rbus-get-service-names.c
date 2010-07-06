@@ -1,4 +1,4 @@
-#include <include/rbus-get-service-name.h>
+#include <include/rbus-get-service-names.h>
 
 DBusConnection* get_connected( DBusBusType bus_type )
 {

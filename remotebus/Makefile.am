@@ -13,10 +13,10 @@ lib_LTLIBRARIES=librbus.la
 noinst_LTLIBRARIES=librbus-internal.la
 
 RBUS_LIBRARY_SOURCES=				\
-	rbus-get-service-name.c			\
+	rbus-get-service-names.c		\
 	rbus-proxy-call.c			\
 	include/rbus-dbus-object-parser.h	\
-	include/rbus-get-service-name.h		\
+	include/rbus-get-service-names.h	\
 	include/rbus-proxy-call.h
 
 RBUS_INTERNAL_SOURCES=				\
