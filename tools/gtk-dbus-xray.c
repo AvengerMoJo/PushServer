@@ -1,38 +1,31 @@
 #include <gtk/gtk.h>
-#include <include/rbus-proxy-call.h>
+#include <include/rbus-get-service-names.h>
 
+enum { 
+  INDEX, 
+  SERVICE_NAME,
+  NUM_SERVICES
+};
 
 static GtkTreeModel *create_model ()
 {
-  GtkListStore  *store;
-  GtkTreeIter    iter;
-  
-  store = gtk_list_store_new (2 , G_TYPE_STRING, G_TYPE_UINT);
+	int i;
+	GtkListStore  *store;
+	GtkTreeIter    iter;
+	service_list_type *system_list = get_system_service_names();
+	service_list_type *session_list = get_session_service_names();
 
-  /* Append a row and fill in some data */
-  gtk_list_store_append (store, &iter);
-  gtk_list_store_set (store, &iter,
-                      0, "Heinz El-Mann",
-                      1, 51,
-                      -1);
-  
-  /* append another row and fill in some data */
-  gtk_list_store_append (store, &iter);
-  gtk_list_store_set (store, &iter,
-                      0, "Jane Doe",
-                      1, 23,
-                      -1);
-  
-  /* ... and a third row */
-  gtk_list_store_append (store, &iter);
-  gtk_list_store_set (store, &iter,
-                      0, "Joe Bungop",
-                      1, 91,
-                      -1);
-  
-  return GTK_TREE_MODEL (store);
+	store = gtk_list_store_new (NUM_SERVICES, G_TYPE_BOOLEAN, G_TYPE_STRING );
+
+	for( i=0; i < system_list->service_count ; i++ ) {
+		gtk_list_store_append (store, &iter);
+		gtk_list_store_set(store, &iter,
+				INDEX, FALSE,
+				SERVICE_NAME, system_list->service_name[i],
+				-1 );
+	}
+	return GTK_TREE_MODEL (store);
 }
-
 
 
 static GtkWidget *create_tree()
@@ -41,31 +34,11 @@ static GtkWidget *create_tree()
   GtkTreeModel        *model;
   GtkWidget           *view;
 
-  view = gtk_tree_view_new ();
-  renderer = gtk_cell_renderer_text_new ();
-
-  gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),
-                                               -1,      
-                                               "Name",  
-                                               renderer,
-                                               "text", 0 ,
-                                               NULL);
-
-  /* --- Column #2 --- */
-
-  renderer = gtk_cell_renderer_text_new ();
-  gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),
-                                               -1,      
-                                               "Object",  
-                                               renderer,
-                                               "text", 1,
-                                               NULL);
-
-  model = create_model ();
-
-  gtk_tree_view_set_model (GTK_TREE_VIEW (view), model);
-
-  g_object_unref (model);
+  gtk_list_store_new (NUM_SERVICES,
+			      G_TYPE_BOOLEAN,
+			      G_TYPE_UINT,
+			      G_TYPE_STRING,
+			      G_TYPE_STRING); 
 
   return view;
 }
@@ -75,23 +48,75 @@ static GtkWidget *create_tree()
 
 int main( int argc, char *argv[])
 {
-	gtk_init(&argc, &argv);
+  gtk_init(&argc, &argv);
 
-	//applet_widget_init(PACKAGE, VERSION, argc, argv, NULL, 0, NULL); 
+  //applet_widget_init(PACKAGE, VERSION, argc, argv, NULL, 0, NULL);
+  GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  GtkWidget *view = create_tree();
+  GtkWidget *vbox = gtk_vbox_new(FALSE, 8);
+  GtkWidget *service_name_list = gtk_scrolled_window_new(NULL, NULL);
+  GtkTreeModel *model;
+  GtkWidget *treeview;
 
-	GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	GtkWidget *view = create_tree();
-//	GtkWidget* applet = applet_widget_new(PACKAGE); 
+  GtkCellRenderer *renderer;
+  GtkTreeViewColumn *column;
 
-	gtk_container_add (GTK_CONTAINER (window), view);
-	//applet_widget_add(APPLET_WIDGET(applet), controls);
-	//gtk_widget_show(applet);
-	gtk_widget_show_all(window);
+  gtk_window_set_title(GTK_WINDOW(window), "DBus-Xray" );
 
-	//applet_widget_gtk_main(); 
-	gtk_main();
+  g_signal_connect (window, "destroy", G_CALLBACK (gtk_widget_destroyed), &window);
+  gtk_container_set_border_width (GTK_CONTAINER (window), 8);
+
+  gtk_container_add (GTK_CONTAINER (window), vbox);
+  gtk_box_pack_start(GTK_BOX(vbox), gtk_label_new( "System DBus Service Name List") , FALSE, FALSE, 0);
+  //gtk_box_pack_start(GTK_BOX(vbox), service_name_list, FALSE, FALSE, 0);
+
+  gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (service_name_list), GTK_SHADOW_ETCHED_IN);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (service_name_list), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+
+  gtk_box_pack_start (GTK_BOX (vbox), service_name_list , TRUE, TRUE, 0);
+
+  /* create tree model */
+  model = create_model ();
+
+  /* create tree view */
+  treeview = gtk_tree_view_new_with_model (model);
+
+  gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (treeview), TRUE);
+  //gtk_tree_view_set_search_column (GTK_TREE_VIEW (treeview), COLUMN_DESCRIPTION);
+
+//  g_object_unref (model);
+  gtk_container_add (GTK_CONTAINER (service_name_list), treeview);
+
+  /* column for fixed toggles */
+  renderer = gtk_cell_renderer_toggle_new ();
+  //g_signal_connect (renderer, "toggled", G_CALLBACK (fixed_toggled), model);
+
+  column = gtk_tree_view_column_new_with_attributes ("SetProxyed",
+						     renderer,
+						     "active", INDEX,
+						     NULL);
+  gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
+				   GTK_TREE_VIEW_COLUMN_FIXED);
+  gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column), 100);
+  gtk_tree_view_append_column (treeview, column);
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("Service Name",
+						     renderer,
+						     "text",
+						     SERVICE_NAME,
+						     NULL);
+  gtk_tree_view_column_set_sort_column_id (column, NUM_SERVICES);
+  gtk_tree_view_append_column (treeview, column);
 
 
-	return 0;
+
+
+
+  gtk_widget_show_all(window);
+
+  gtk_main();
+
+  return 0;
 }
 
