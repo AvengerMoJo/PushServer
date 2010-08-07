@@ -15,12 +15,14 @@ static GtkTreeModel *create_model ()
 	service_list_type *system_list = get_system_service_names();
 	service_list_type *session_list = get_session_service_names();
 
-	store = gtk_list_store_new (NUM_SERVICES, G_TYPE_BOOLEAN, G_TYPE_STRING );
+	store = gtk_list_store_new (NUM_SERVICES, 
+					G_TYPE_UINT,
+					G_TYPE_STRING );
 
 	for( i=0; i < system_list->service_count ; i++ ) {
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set(store, &iter,
-				INDEX, FALSE,
+				INDEX, i+1,
 				SERVICE_NAME, system_list->service_name[i],
 				-1 );
 	}
@@ -28,32 +30,23 @@ static GtkTreeModel *create_model ()
 }
 
 
-static GtkWidget *create_tree()
-{
-  GtkCellRenderer     *renderer;
-  GtkTreeModel        *model;
-  GtkWidget           *view;
-
-  gtk_list_store_new (NUM_SERVICES,
-			      G_TYPE_BOOLEAN,
-			      G_TYPE_UINT,
-			      G_TYPE_STRING,
-			      G_TYPE_STRING); 
-
-  return view;
-}
-
-
-
-
 int main( int argc, char *argv[])
 {
   gtk_init(&argc, &argv);
 
   //applet_widget_init(PACKAGE, VERSION, argc, argv, NULL, 0, NULL);
+  GError **error;
   GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  GtkWidget *view = create_tree();
+  //GtkWidget *view = create_tree();
   GtkWidget *vbox = gtk_vbox_new(FALSE, 8);
+  //GtkWidget *iconbox = gtk_hbox_new(FALSE, 8);
+  GtkWidget *iconbox = gtk_toolbar_new ();
+
+  GdkPixbuf *session_pixbuf;
+  GtkToolItem *session_icon;
+  GdkPixbuf *system_pixbuf;
+  GtkToolItem *system_icon;
+
   GtkWidget *service_name_list = gtk_scrolled_window_new(NULL, NULL);
   GtkTreeModel *model;
   GtkWidget *treeview;
@@ -67,7 +60,25 @@ int main( int argc, char *argv[])
   gtk_container_set_border_width (GTK_CONTAINER (window), 8);
 
   gtk_container_add (GTK_CONTAINER (window), vbox);
-  gtk_box_pack_start(GTK_BOX(vbox), gtk_label_new( "System DBus Service Name List") , FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox), gtk_label_new( "System and Session Service Name List") , FALSE, FALSE, 0);
+
+  session_icon = gtk_tool_button_new( NULL, "Session List" ); 
+  gtk_tool_button_set_icon_name( GTK_TOOL_BUTTON( session_icon ), "config-users" ); 
+
+  system_icon = gtk_tool_button_new( NULL, "System List" ); 
+  gtk_tool_button_set_icon_name( GTK_TOOL_BUTTON( session_icon ), "ksysguard" ); 
+
+  gtk_toolbar_insert (GTK_TOOLBAR (iconbox), system_icon , -1);
+  gtk_toolbar_insert (GTK_TOOLBAR (iconbox), session_icon , -1);
+
+  gtk_box_pack_start(GTK_BOX(vbox), iconbox , FALSE, FALSE, 0);
+
+  //gtk_box_pack_start(GTK_BOX(iconbox), gtk_icon_new("system"), FALSE, FALSE, 0);
+  //gtk_box_pack_start(GTK_BOX(iconbox), gtk_icon_new("session"), FALSE, FALSE, 0);
+  // need to update to non-fix path search
+  //session_pixbuf = gdk_pixbuf_new_from_file ("/usr/share/icons/Tango/scalable/apps/system-users.svg", error);
+  //system_pixbuf = gdk_pixbuf_new_from_file ("/usr/share/icons/Tango/scalable/apps/ksysguard.svg", error);
+
   //gtk_box_pack_start(GTK_BOX(vbox), service_name_list, FALSE, FALSE, 0);
 
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (service_name_list), GTK_SHADOW_ETCHED_IN);
@@ -88,12 +99,12 @@ int main( int argc, char *argv[])
   gtk_container_add (GTK_CONTAINER (service_name_list), treeview);
 
   /* column for fixed toggles */
-  renderer = gtk_cell_renderer_toggle_new ();
+  renderer = gtk_cell_renderer_text_new ();
   //g_signal_connect (renderer, "toggled", G_CALLBACK (fixed_toggled), model);
 
-  column = gtk_tree_view_column_new_with_attributes ("SetProxyed",
+  column = gtk_tree_view_column_new_with_attributes ("Index",
 						     renderer,
-						     "active", INDEX,
+						     "text", INDEX,
 						     NULL);
   gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
 				   GTK_TREE_VIEW_COLUMN_FIXED);
@@ -106,7 +117,7 @@ int main( int argc, char *argv[])
 						     "text",
 						     SERVICE_NAME,
 						     NULL);
-  gtk_tree_view_column_set_sort_column_id (column, NUM_SERVICES);
+  gtk_tree_view_column_set_sort_column_id (column, SERVICE_NAME );
   gtk_tree_view_append_column (treeview, column);
 
 
