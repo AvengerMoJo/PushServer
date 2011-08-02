@@ -25,7 +25,7 @@ DBusConnection* get_session_connected(){
 void request_name_for_connection( DBusConnection* conn){ 
    DBusError err;
    int ret;
-   char* connection_name = "com.novell.PushServer.Consumer"; // target name for the consumer
+   char* connection_name = "com.avengergear.PushServer.Consumer"; // target name for the consumer
 
    // request our name on the bus and check for errors
    ret = dbus_bus_request_name(conn, connection_name, DBUS_NAME_FLAG_REPLACE_EXISTING , &err);
@@ -95,11 +95,11 @@ void call_name(DBusConnection* conn, char* service_name ){
    char ele_type[5]; 
 
    char* target = service_name ; // target for the method call;
-   char* object =  "/com/novell/PushServer/Proxy/TypeTest"; // started with root .... 
+   char* object =  "/com/avengergear/PushServer/Proxy/TypeTest"; // started with root .... 
    // we need to some how create a dynamic linked list of object -> method mapping table to displace for call 
    //char* interface = DBUS_INTERFACE_INTROSPECTABLE ; 
    //char* interface = "org.freedesktop.DBus.Introspectable";
-   char* interface = "com.novell.PushServer.Proxy.Interface";
+   char* interface = "com.avengergear.PushServer.Proxy.Interface";
 
    //char* name = "RemoteName"; // name of the method
    char* method = "TypeTest";
@@ -225,8 +225,8 @@ int main() {
     DBusConnection* session_bus;
     session_bus = get_session_connected(); 
     request_name_for_connection( session_bus );
-    //call_name( session_bus, "com.novell.PushServer.Proxy" );
-    call_name( session_bus, "com.novell.PushServer.Proxy.TypeTest" );
+    //call_name( session_bus, "com.avengergear.PushServer.Proxy" );
+    call_name( session_bus, "com.avengergear.PushServer.Proxy.TypeTest" );
 
     return 0;
 }

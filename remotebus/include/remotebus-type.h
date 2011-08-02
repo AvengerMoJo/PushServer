@@ -14,11 +14,11 @@ RBUS_EXTERN_START
 
 #if 1
 #define RBUS_HAVE_INT64 1
-typedef long long rbus_int64_t;
-typedef unsigned long long rbus_uint64_t;
+typedef long rbus_int64_t;
+typedef unsigned long rbus_uint64_t;
 
-#define RBUS_INT64_CONSTANT(val)  ((val##LL))
-#define RBUS_UINT64_CONSTANT(val) ((val##ULL))
+#define RBUS_INT64_CONSTANT(val)  ((val##L))
+#define RBUS_UINT64_CONSTANT(val) ((val##UL))
 
 #else
 #undef RBUS_HAVE_INT64

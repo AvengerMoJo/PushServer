@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<node name="/com/novell/PushServer/Proxy">
+<node name="/com/avengergear/PushServer/Proxy">
 
-  <interface name="com.novell.PushServer.Proxy.Interface">
+  <interface name="com.avengergear.PushServer.Proxy.Interface">
     <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="my_object"/>
     <method name="RemoteName">
       <!-- This is optional, and in this case is redunundant -->

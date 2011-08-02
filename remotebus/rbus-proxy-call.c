@@ -5,7 +5,7 @@ DBusConnection *proxy_session( char* object_name )
         DBusConnection* session=NULL;
         DBusError error;
         dbus_uint32_t result;
-        char* connection_name = "com.novell.PushServer.Proxy"; //  Proxy name to register in the session bus 
+        char* connection_name = "com.avengergear.PushServer.Proxy"; //  Proxy name to register in the session bus 
 
         dbus_error_init(&error);
         session = dbus_bus_get(DBUS_BUS_SESSION, &error);
@@ -150,7 +150,7 @@ dbus_bool_t create_output_message( DBusMessage *message, rbus_method_type_pointe
 			}
 		}
 	}
-	my_list = calloc( list_count+1, sizeof( va_list ) ); 
+//	my_list = calloc( list_count+1, sizeof( va_list ) ); 
 	for( i=0; i< method->output_count; i++){
 		int args_len = strlen( method->output_list[i]->type ); 
 		int x;
